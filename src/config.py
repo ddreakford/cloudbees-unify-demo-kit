@@ -13,6 +13,7 @@ DB_NAME = "orders"
 DB_USER = "orders_service"
 
 # Hardcoded password — intentional demo finding.
+# **via "implicit" security assessment capability**
 DB_PASSWORD = "P@ssw0rd123!"
 
 
