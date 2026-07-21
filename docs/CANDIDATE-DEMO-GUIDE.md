@@ -120,7 +120,7 @@ You are **not** expected to master the product. You are expected to prepare like
 You should be comfortable explaining these building blocks in plain language. (Depth beyond this: see the official docs linked at the end — do not over-claim capabilities you haven't verified in your own org.)
 
 ### Component
-A **component** maps to a source repository and its CI (build/test/scan). One component = one repo. In this kit, the component is `orders-api`.
+A **component** maps to a source repository and its CI (build/test/scan). One component = one repo. In this kit, the component is `carechart-api`.
 
 ### Application
 An **application** is a product made up of one or more components. This is where **Release Orchestration** lives. *In CloudBees Unify an application and a component cannot be the same repository* — that's why this kit ships two repos.
@@ -140,7 +140,7 @@ Deployment targets (e.g. `staging`, `prod`, `qa`) created in the platform and as
 Each job can publish a **Markdown evidence item** to the run's **Evidence tab** — test results, security findings, approvals, deployment records. This is the backbone of the **governance/auditability** story: "every stage produces evidence automatically."
 
 ### Artifacts
-A component's CI **registers artifact versions** (e.g. `orders-api:1.4.x`) with the platform; registered artifacts appear under the component's **Artifacts**. Releases deploy *registered artifact versions* — so CI must register an artifact for a release to have something to deploy. In this kit, `ci.yaml`'s `package` job registers the `orders-api` artifact.
+A component's CI **registers artifact versions** (e.g. `carechart-api:1.4.x`) with the platform; registered artifacts appear under the component's **Artifacts**. Releases deploy *registered artifact versions* — so CI must register an artifact for a release to have something to deploy. In this kit, `ci.yaml`'s `package` job registers the `carechart-api` artifact.
 
 ### Integrations ("Embrace, don't replace")
 Unify connects the tools teams already use — GitHub, GitLab, Jenkins, Jira, ServiceNow, Azure DevOps, and more — rather than forcing migration. This is the single most important message in both scenarios.
@@ -160,11 +160,11 @@ You have two ready-made repositories. They are **self-contained and simulated** 
 
 | Repo | Represents | Contents |
 | --- | --- | --- |
-| **[cloudbees-unify-demo-kit](https://github.com/cb-demos/cloudbees-unify-demo-kit)** | The **Component** (`orders-api`) | `ci.yaml` (build/test/scan, publishes evidence per job), `deploy.yaml` (simulated component deploy), `k8s/`, `helm/`, and a GitHub Actions CI alternative |
+| **[cloudbees-unify-demo-kit](https://github.com/cb-demos/cloudbees-unify-demo-kit)** | The **Component** (`carechart-api`) | `ci.yaml` (build/test/scan, publishes evidence per job), `deploy.yaml` (simulated component deploy), `k8s/`, `helm/`, and a GitHub Actions CI alternative |
 | **[cloudbees-unify-demo-app](https://github.com/cb-demos/cloudbees-unify-demo-app)** | The **Application** (Release Orchestration) | Two **staged** release workflows (FinSure, Horizon), a `deployer.yaml`, plus `manifests/`, `policies/`, `mock-data/` as evidence/talking points |
 
 ### What's inside the component repo
-* `.cloudbees/workflows/ci.yaml` — `validate → unit-tests → security-scan → package`; **each job publishes an evidence item**, and `package` **registers a build artifact** (`orders-api` version) so releases have something to deploy.
+* `.cloudbees/workflows/ci.yaml` — `validate → unit-tests → security-scan → package`; **each job publishes an evidence item**, and `package` **registers a build artifact** (`carechart-api` version) so releases have something to deploy.
 * `.cloudbees/workflows/deploy.yaml` — simulated component deploy (callable by the deployer, or run standalone); publishes evidence.
 * `.github/workflows/ci.yml` — external CI example, to show "keep your existing tools."
 

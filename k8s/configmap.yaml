@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: orders-api-config
+  name: carechart-api-config
 data:
   feature.releaseOrchestration: "enabled"
   feature.auditEvidence: "enabled"

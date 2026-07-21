@@ -1,6 +1,6 @@
 # CloudBees Unify Candidate Demo — Component (CI + Deploy)
 
-A lightweight starter kit for SE candidates building a CloudBees Unify demo as part of an interview. This is the **Component** repository: continuous integration (build/test/scan) and component deployment for the `orders-api` component.
+A lightweight starter kit for SE candidates building a CloudBees Unify demo as part of an interview. This is the **Component** repository: continuous integration (build/test/scan) and component deployment for the `carechart-api` component.
 
 > **Release Orchestration lives in a separate repo.** In CloudBees Unify an Application and a Component cannot be the same repository, so the staged, governed **release workflows** are in the Application repo:
 > **[cb-demos/cloudbees-unify-demo-app](https://github.com/cb-demos/cloudbees-unify-demo-app)**
@@ -18,7 +18,7 @@ A lightweight starter kit for SE candidates building a CloudBees Unify demo as p
 
 Workflows (runnable standalone via **Run workflow**):
 
-- `.cloudbees/workflows/ci.yaml` — CI: validate → unit tests → security scan → package. The package job **registers a build artifact** (`orders-api` version `1.4.<run>`) with CloudBees Unify so releases have an artifact to deploy. Each job publishes evidence to the run's Evidence tab.
+- `.cloudbees/workflows/ci.yaml` — CI: validate → unit tests → security scan → package. The package job **registers a build artifact** (`carechart-api` version `1.4.<run>`) with CloudBees Unify so releases have an artifact to deploy. Each job publishes evidence to the run's Evidence tab.
 - `.cloudbees/workflows/deploy.yaml` — simulated component deploy (callable by the application's deployer via `workflow_call`, or run standalone). Mock/echo only — no real cluster — and publishes evidence.
 - `.github/workflows/ci.yml` — GitHub Actions CI alternative, to show external-toolchain integration
 
@@ -39,6 +39,6 @@ Supporting assets:
 
 These are intentionally simple building blocks. To make the demo yours:
 
-- Rename the application/components to fit your scenario (e.g. `Customer Portal` / `orders-api`).
+- Rename the application/components to fit your scenario (e.g. `Customer Portal` / `carechart-api`).
 - Add or remove a tool integration to match the customer's toolchain.
 - Pair with the application repo to show the full **build → release** story across a Component and an Application.

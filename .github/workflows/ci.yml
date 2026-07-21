@@ -13,9 +13,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Build
         run: |
-          echo "Build orders-api"
+          echo "Build carechart-api"
           mkdir -p build
-          echo "demo artifact" > build/orders-api.txt
+          echo "demo artifact" > build/carechart-api.txt
       - name: Unit tests
         run: |
           echo "PASS: unit tests"
@@ -28,7 +28,7 @@ jobs:
           cat > release-evidence.json <<JSON
           {
             "application": "customer-portal",
-            "component": "orders-api",
+            "component": "carechart-api",
             "build": "${{ github.run_number }}",
             "commit": "${{ github.sha }}",
             "tests": "passed",

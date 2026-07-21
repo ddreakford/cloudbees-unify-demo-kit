@@ -20,7 +20,7 @@ on:
     inputs:
       artifact-id:
         type: string
-        default: orders-api:1.4.0
+        default: carechart-api:1.4.0
       environment:
         type: choice
         options:
@@ -38,7 +38,7 @@ jobs:
         shell: sh
         run: |
           echo "== Simulated component deployment =="
-          echo "Component:    orders-api"
+          echo "Component:    carechart-api"
           echo "Artifact:     ${{ inputs.artifact-id }}"
           echo "Environment:  ${{ inputs.environment }}"
           if [ "${{ inputs.environment }}" = "prod" ]; then
@@ -52,7 +52,7 @@ jobs:
         with:
           content: |-
             ## Component deployment (simulated)
-            - Component: orders-api
+            - Component: carechart-api
             - Artifact: ${{ inputs.artifact-id }}
             - Environment: ${{ inputs.environment }}
             - Status: **success** (simulated)

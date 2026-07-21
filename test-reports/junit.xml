@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="orders-api" tests="16" failures="1" errors="0" skipped="1" time="5.128">
+<testsuites name="carechart-api" tests="16" failures="1" errors="0" skipped="1" time="5.128">
   <testsuite name="orders_api.tests.test_orders" tests="7" failures="0" errors="0" skipped="0" time="2.104">
     <testcase classname="test_orders.OrderApiTests" name="test_create_order_returns_201" time="0.214"/>
     <testcase classname="test_orders.OrderApiTests" name="test_get_order_by_id" time="0.108"/>

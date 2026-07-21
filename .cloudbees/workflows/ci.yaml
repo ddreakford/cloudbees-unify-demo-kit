@@ -45,7 +45,7 @@ jobs:
         uses: docker://node:20-alpine
         shell: sh
         run: |
-          echo "Running unit tests for orders-api (recorded results in test-reports/junit.xml)"
+          echo "Running unit tests for carechart-api (recorded results in test-reports/junit.xml)"
           echo "14 passed, 1 failed, 1 skipped"
       - name: Publish test results
         uses: cloudbees-io/publish-test-results@v2
@@ -57,7 +57,7 @@ jobs:
         uses: https://github.com/cloudbees-io/publish-evidence-item@v1
         with:
           content: |-
-            ## Unit tests — orders-api
+            ## Unit tests — carechart-api
             - Tests: 16
             - Passed: 14
             - Failed: 1 (`test_retry_on_gateway_timeout`)
@@ -98,7 +98,7 @@ jobs:
           cat > build/release-metadata.json <<JSON
           {
             "application": "customer-portal",
-            "component": "orders-api",
+            "component": "carechart-api",
             "version": "1.4.${{ cloudbees.run_number }}",
             "commit": "${{ cloudbees.scm.sha }}",
             "scenario": "candidate-demo",
@@ -111,19 +111,19 @@ jobs:
         id: register-artifact
         uses: cloudbees-io/register-build-artifact@v2
         with:
-          name: orders-api
+          name: carechart-api
           version: 1.4.${{ cloudbees.run_number }}
-          url: docker.io/cloudbeesdemo/orders-api:1.4.${{ cloudbees.run_number }}
+          url: docker.io/cloudbeesdemo/carechart-api:1.4.${{ cloudbees.run_number }}
       - name: Publish evidence
         uses: https://github.com/cloudbees-io/publish-evidence-item@v1
         with:
           content: |-
             ## Package — build metadata + registered artifact
             - Application: customer-portal
-            - Component: orders-api
+            - Component: carechart-api
             - Version: 1.4.${{ cloudbees.run_number }}
             - Registered artifact ID: ${{ steps.register-artifact.outputs.artifact-id }}
-            - Artifact URL: docker.io/cloudbeesdemo/orders-api:1.4.${{ cloudbees.run_number }}
+            - Artifact URL: docker.io/cloudbeesdemo/carechart-api:1.4.${{ cloudbees.run_number }}
             - Commit: ${{ cloudbees.scm.sha }}
             - Security policy: passed
             - Tests: passed

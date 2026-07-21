@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: orders-api
+  name: carechart-api
   labels:
-    app: orders-api
+    app: carechart-api
 spec:
   type: ClusterIP
   selector:
-    app: orders-api
+    app: carechart-api
   ports:
     - name: http
       port: 80

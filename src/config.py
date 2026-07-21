@@ -1,5 +1,5 @@
 """
-orders-api configuration.
+carechart-api configuration.
 
 NOTE (demo): this file intentionally contains a hardcoded credential so that
 CloudBees Unify's automatic security scanning flags a finding in the
