@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites name="carechart-api" tests="16" failures="1" errors="0" skipped="1" time="5.128">
-  <testsuite name="orders_api.tests.test_orders" tests="7" failures="0" errors="0" skipped="0" time="2.104">
+  <testsuite name="carechart_api.tests.test_orders" tests="7" failures="0" errors="0" skipped="0" time="2.104">
     <testcase classname="test_orders.OrderApiTests" name="test_create_order_returns_201" time="0.214"/>
     <testcase classname="test_orders.OrderApiTests" name="test_get_order_by_id" time="0.108"/>
     <testcase classname="test_orders.OrderApiTests" name="test_list_orders_paginated" time="0.331"/>
@@ -9,12 +9,12 @@
     <testcase classname="test_orders.OrderApiTests" name="test_order_not_found_returns_404" time="0.087"/>
     <testcase classname="test_orders.OrderApiTests" name="test_invalid_payload_returns_400" time="0.121"/>
   </testsuite>
-  <testsuite name="orders_api.tests.test_health" tests="3" failures="0" errors="0" skipped="0" time="0.402">
+  <testsuite name="carechart_api.tests.test_health" tests="3" failures="0" errors="0" skipped="0" time="0.402">
     <testcase classname="test_health.HealthTests" name="test_health_endpoint_ok" time="0.061"/>
     <testcase classname="test_health.HealthTests" name="test_readiness_probe" time="0.070"/>
     <testcase classname="test_health.HealthTests" name="test_liveness_probe" time="0.058"/>
   </testsuite>
-  <testsuite name="orders_api.tests.test_payments" tests="6" failures="1" errors="0" skipped="1" time="2.622">
+  <testsuite name="carechart_api.tests.test_payments" tests="6" failures="1" errors="0" skipped="1" time="2.622">
     <testcase classname="test_payments.PaymentTests" name="test_authorize_payment" time="0.402"/>
     <testcase classname="test_payments.PaymentTests" name="test_capture_payment" time="0.377"/>
     <testcase classname="test_payments.PaymentTests" name="test_refund_payment" time="0.451"/>
