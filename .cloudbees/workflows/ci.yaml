@@ -69,22 +69,32 @@ jobs:
     steps:
       - name: Checkout source
         uses: https://github.com/cloudbees-io/checkout@v1
-      - name: Note on automatic security scanning
+      # Implicit security assessment is an ORG-LEVEL setting, off by default:
+      # Security > Marketplace > toggle "Implicit security assessment" active,
+      # AND activate a scanner. A hardcoded credential in Python needs a SECRET
+      # scanner (Gitleaks / TruffleHog Code) — Checkov and Gosec will not find it.
+      # Until one is active, nothing appears in the component's security center,
+      # so this evidence item states the control, not a finding it can't confirm.
+      - name: Note on repository security scanning
         uses: docker://alpine:3.20
         shell: sh
         run: |
-          echo "CloudBees Unify automatically scans connected repositories for"
-          echo "secrets and vulnerabilities."
-          echo "Findings appear in the component's Security tab — including the"
-          echo "hardcoded credential intentionally added in src/config.py."
+          echo "Repository security scanning is handled by the platform, not by"
+          echo "a step in this pipeline — no team has to remember to opt in."
+          echo "This repo carries a deliberate finding: a hardcoded credential"
+          echo "in src/config.py."
       - name: Publish evidence
         uses: https://github.com/cloudbees-io/publish-evidence-item@v1
         with:
           content: |-
-            ## Security — automatic scanning
-            CloudBees Unify automatically scans this repository. Findings — including
-            the **hardcoded credential** in `src/config.py` — are shown in the
-            component's **Security** tab for triage and remediation tracking.
+            ## Security — repository scanning
+            Repository scanning is a **platform control**, not a pipeline step — no team
+            has to remember to opt in. With implicit security assessment enabled and a
+            secret scanner active, findings for this component appear in its
+            **security center** for triage and remediation tracking.
+
+            This repository carries a deliberate finding: a **hardcoded credential** in
+            `src/config.py`.
   package:
     steps:
       - name: Checkout source
