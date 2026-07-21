@@ -4,7 +4,7 @@ metadata:
   name: carechart-api
   labels:
     app: carechart-api
-    cloudbees.demo/application: customer-portal
+    cloudbees.demo/application: patient-portal
 spec:
   replicas: 2
   selector:

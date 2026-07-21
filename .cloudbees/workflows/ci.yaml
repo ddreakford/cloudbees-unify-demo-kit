@@ -97,7 +97,7 @@ jobs:
           mkdir -p build
           cat > build/release-metadata.json <<JSON
           {
-            "application": "customer-portal",
+            "application": "patient-portal",
             "component": "carechart-api",
             "version": "1.4.${{ cloudbees.run_number }}",
             "commit": "${{ cloudbees.scm.sha }}",
@@ -119,7 +119,7 @@ jobs:
         with:
           content: |-
             ## Package — build metadata + registered artifact
-            - Application: customer-portal
+            - Application: patient-portal
             - Component: carechart-api
             - Version: 1.4.${{ cloudbees.run_number }}
             - Registered artifact ID: ${{ steps.register-artifact.outputs.artifact-id }}

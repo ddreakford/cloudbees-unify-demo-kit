@@ -27,7 +27,7 @@ jobs:
         run: |
           cat > release-evidence.json <<JSON
           {
-            "application": "customer-portal",
+            "application": "patient-portal",
             "component": "carechart-api",
             "build": "${{ github.run_number }}",
             "commit": "${{ github.sha }}",
