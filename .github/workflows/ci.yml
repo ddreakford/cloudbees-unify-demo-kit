@@ -1,38 +1,178 @@
-name: External CI - Build Test Scan
+name: External CI (GitHub Actions) - Build, Test, Scan
+
+# Deliberate structural twin of .cloudbees/workflows/ci.yaml:
+#   validate -> unit-tests -> security-scan -> package
+#
+# Same four jobs, same evidence, same test results, same registered artifact —
+# executed by GitHub Actions instead of CloudBees. That is the control-plane
+# point: the team keeps its runner, its syntax and its tooling, and Unify still
+# gets the governance surface.
+#
+# Auth is GitHub OIDC (permissions.id-token below). No API tokens or secrets to
+# manage — the repo is already a connected component in Unify.
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+
+permissions:
+  id-token: write   # required by every cloudbees-io-gha/* action
+  contents: read
+
+env:
+  COMPONENT: carechart-api
+  APPLICATION: patient-portal
+  # 1.5.x marks GitHub-Actions provenance; the CloudBees workflow registers 1.4.x,
+  # so both lanes are visible side by side under the component's Artifacts.
+  VERSION: 1.5.${{ github.run_number }}
+
 jobs:
-  build-test-scan:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build
+
+      - name: Validate repository structure
         run: |
-          echo "Build carechart-api"
+          echo "Validating demo repository structure"
+          test -f k8s/deployment.yaml
+          test -f k8s/service.yaml
+          test -f helm/unify-demo-app/Chart.yaml
+          echo "Repository structure is ready"
+
+      - name: Publish evidence
+        uses: cloudbees-io-gha/publish-evidence-item@v2
+        with:
+          content: |-
+            ## Validate — repository structure
+            - `k8s/deployment.yaml`: present
+            - `k8s/service.yaml`: present
+            - `helm/unify-demo-app/Chart.yaml`: present
+            - Status: **ready**
+            - Executed by: **GitHub Actions** (run ${{ github.run_number }})
+
+  unit-tests:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        run: |
+          echo "Running unit tests for ${COMPONENT} (recorded results in test-reports/junit.xml)"
+          echo "14 passed, 1 failed, 1 skipped"
+
+      # Same JUnit file the CloudBees workflow publishes — results land in the
+      # component's Test results tab either way.
+      - name: Publish test results
+        uses: cloudbees-io-gha/publish-test-results@v2
+        continue-on-error: true
+        with:
+          test-type: junit
+          results-path: test-reports/junit.xml
+
+      - name: Publish evidence
+        uses: cloudbees-io-gha/publish-evidence-item@v2
+        with:
+          content: |-
+            ## Unit tests — ${{ env.COMPONENT }}
+            - Tests: 16
+            - Passed: 14
+            - Failed: 1 (`test_retry_on_gateway_timeout`)
+            - Skipped: 1
+            - Results published to the **Test results** tab
+            - Executed by: **GitHub Actions** (run ${{ github.run_number }})
+
+  security-scan:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # A real scan, not an echo — the same engine Unify runs for implicit
+      # assessment, so the external run and the platform agree on the finding.
+      - name: Scan for secrets with Gitleaks
+        id: gitleaks
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+            detect --no-git -s /repo -f json -r /repo/gitleaks-report.json \
+            --exit-code 0 --redact
+          COUNT=$(python3 -c "import json;print(len(json.load(open('gitleaks-report.json'))))")
+          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+          echo "Gitleaks findings: ${COUNT}"
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          for f in json.load(open('gitleaks-report.json')):
+              print(f"- `{f['RuleID']}` in `{f['File']}` line {f['StartLine']}")
+          PY
+
+      - name: Publish evidence
+        uses: cloudbees-io-gha/publish-evidence-item@v2
+        with:
+          content: |-
+            ## Security — secret scanning
+            - Scanner: **Gitleaks** (run in GitHub Actions)
+            - Findings: **${{ steps.gitleaks.outputs.count }}**
+            - Executed by: **GitHub Actions** (run ${{ github.run_number }})
+
+            Unify also scans this repository independently via **implicit security
+            assessment**, and those findings are triaged in the component's
+            **security center**. The external pipeline and the platform control
+            agree — one is the team's choice of tooling, the other is the
+            organization's baseline.
+
+  package:
+    needs: security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create build metadata
+        run: |
           mkdir -p build
-          echo "demo artifact" > build/carechart-api.txt
-      - name: Unit tests
-        run: |
-          echo "PASS: unit tests"
-      - name: Security scan placeholder
-        run: |
-          echo "Critical: 0"
-          echo "High: 0"
-      - name: Publish release evidence
-        run: |
-          cat > release-evidence.json <<JSON
+          cat > build/release-metadata.json <<JSON
           {
-            "application": "patient-portal",
-            "component": "carechart-api",
-            "build": "${{ github.run_number }}",
+            "application": "${APPLICATION}",
+            "component": "${COMPONENT}",
+            "version": "${VERSION}",
             "commit": "${{ github.sha }}",
-            "tests": "passed",
-            "security": "passed"
+            "provider": "github-actions",
+            "scenario": "candidate-demo"
           }
           JSON
-          cat release-evidence.json
+          cat build/release-metadata.json
+
+      # The same registration the CloudBees workflow performs. An artifact built
+      # by GitHub Actions is a first-class release candidate in Unify.
+      - name: Register build artifact
+        id: register-artifact
+        uses: cloudbees-io-gha/register-build-artifact@v3
+        with:
+          name: ${{ env.COMPONENT }}
+          version: ${{ env.VERSION }}
+          url: docker.io/cloudbeesdemo/${{ env.COMPONENT }}:${{ env.VERSION }}
+          type: Docker
+          label: external-ci,github-actions
+
+      - name: Publish evidence
+        uses: cloudbees-io-gha/publish-evidence-item@v2
+        with:
+          content: |-
+            ## Package — build metadata + registered artifact
+            - Application: ${{ env.APPLICATION }}
+            - Component: ${{ env.COMPONENT }}
+            - Version: ${{ env.VERSION }}
+            - Registered artifact ID: ${{ steps.register-artifact.outputs.cbp_artifact_id }}
+            - Artifact URL: docker.io/cloudbeesdemo/${{ env.COMPONENT }}:${{ env.VERSION }}
+            - Commit: ${{ github.sha }}
+            - Executed by: **GitHub Actions** (run ${{ github.run_number }})
+
+            This version is registered against the same component as the CloudBees-run
+            build, and is deployable by the same release orchestration.
